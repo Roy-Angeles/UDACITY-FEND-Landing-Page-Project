@@ -11,28 +11,28 @@
  *
  * JS Standard: ESlint
  *
- */ 
+ */
 
 
 /**
  * Define Global Variables and Constants
  *
- */ 
+ */
 
- // Set time when countdown must stop
+// Set time when countdown must stop
 const COUNTDOWN_STOP = '2022-11-21T10:00:00Z';
 
- // Container for top navigation
+// Container for top navigation
 const NAVIGATION_TOP = document.querySelector('.menu-items');
 // Container for footer navigation
-const NAVIGATION_BOTTOM = document.querySelector('.footer-menu'); 
- // Sections extracted from DOM
+const NAVIGATION_BOTTOM = document.querySelector('.footer-menu');
+// Sections extracted from DOM
 const DOM_SECTIONS = document.querySelectorAll('[data-nav], [data-nav-bind]');
- // Checkbox to operate hamburger navigation
+// Checkbox to operate hamburger navigation
 const CHECKBOX = document.querySelector('.navbar-container [type=checkbox]');
 
 // Global array to store sections' data
-let sections = []; 
+let sections = [];
 // Variable to store scrolling action
 let isScrolling = false;
 // Variable to store timer data for requestAnimationFrame
@@ -84,13 +84,13 @@ rafCallback = (timer) => {
 
         // Handle scroll to top button visibility
         scrollTopButtonVisibility();
-    
+
         // Update countdown timer
         countdownUpdate();
-    
+
         rafTimer = timer;
     }
-    window.requestAnimationFrame(rafCallback);    
+    window.requestAnimationFrame(rafCallback);
 };
 
 /**
@@ -99,7 +99,7 @@ rafCallback = (timer) => {
  * @returns void
  */
 
- onScroll = () => {
+onScroll = () => {
 
     setActiveSectionNavigationItem();
     navbarVisibility();
@@ -201,7 +201,7 @@ navigationCreate = () => {
 
         // Add created navigation elements to the containers
         NAVIGATION_TOP.appendChild(navigationItemTop);
-        NAVIGATION_BOTTOM.appendChild(navigationItemBottom);    
+        NAVIGATION_BOTTOM.appendChild(navigationItemBottom);
     });
 };
 
@@ -223,7 +223,7 @@ countdownUpdate = () => {
 
     // Calculate days, hours and minutes left
     let daysLeft = left > 0 ? Math.floor(left / (1000 * 60 * 60 * 24)) : 0;
-    let hoursLeft = left > 0 ? Math.floor(left / (1000 * 60 * 60) - daysLeft * 24): 0;
+    let hoursLeft = left > 0 ? Math.floor(left / (1000 * 60 * 60) - daysLeft * 24) : 0;
     let minutesLeft = left > 0 ? Math.floor(left / (1000 * 60) - daysLeft * 60 * 24 - hoursLeft * 60) : 0;
 
     // Add '0' to one-character numbers
@@ -264,23 +264,23 @@ setActiveSectionNavigationItem = () => {
 
         // Check if section top is in required range and highlight navigation item with active class
         // and remove inactive class for navigation item
-        if (offset > sections[i].top && sections[i+1] && offset < sections[i+1].top || 
-            offset > sections[i].top && !sections[i+1]) {
-                if(item) {
-                    item.classList.add('active');
-                    item.classList.remove('inactive')
-                }
+        if (offset > sections[i].top && sections[i + 1] && offset < sections[i + 1].top ||
+            offset > sections[i].top && !sections[i + 1]) {
+            if (item) {
+                item.classList.add('active');
+                item.classList.remove('inactive')
+            }
             section.classList.add('your-active-class');
 
-        // remove active class if not and add inactive class to navigation item
+            // remove active class if not and add inactive class to navigation item
         } else {
-            if(item) {
+            if (item) {
                 item.classList.add('inactive');
                 item.classList.remove('active')
-            }            
+            }
             section.classList.remove('your-active-class');
-        }        
-    }    
+        }
+    }
 };
 
 /**
@@ -309,7 +309,7 @@ animatedVisibility = () => {
                 element.classList.remove('animate-fade-in');
             }
 
-        // If it doesn't have animation class set
+            // If it doesn't have animation class set
         } else {
 
             // and its top is in viewport - set animation class
@@ -342,9 +342,9 @@ navbarVisibility = () => {
     }
 
     // Make navbar visible after timeout if scroll stops
-    isScrolling = setTimeout(function() {
+    isScrolling = setTimeout(function () {
         document.querySelector('#navbar').classList.remove('navbar-hidden')
-    }, 300);    
+    }, 300);
 }
 
 /**
@@ -353,7 +353,7 @@ navbarVisibility = () => {
  * @returns void
  */
 
- onNavigationClick = (event) => {
+onNavigationClick = (event) => {
 
     // Check if click happened on desired target
     if (event.target.dataset.id) {
@@ -362,7 +362,7 @@ navbarVisibility = () => {
         sections.forEach((section) => {
             if (section.id === event.target.dataset.id) {
                 event.preventDefault();
-            
+
                 // Hide side navigation in mobile
                 hideSideMenu();
 
@@ -374,13 +374,13 @@ navbarVisibility = () => {
             }
         });
     }
- };
+};
 
- /**
-  * @description Create scroll to top button
-  * 
-  * @returns void
-  */
+/**
+ * @description Create scroll to top button
+ * 
+ * @returns void
+ */
 
 createScrollTopButton = () => {
 
@@ -460,3 +460,297 @@ init = () => {
 // Initialize 
 
 init();
+
+
+/**
+ *
+ * Minimalistic scroll slider with a few parameters
+ *
+ * Dependencies: None
+ *
+ * JS Version: ES2015/ES6
+ *
+ * JS Standard: ESlint
+ *
+ */
+
+class Slider {
+
+    // Reference to an aelement that contains slides
+    container = null;
+
+    // Reference to an element that contains control dots
+    dotsContainer = null;
+
+    // Array of slides elements
+    elements = [];
+
+    // Array of control dots element
+    dots = [];
+
+    // Variable that keeps timer id
+    sliderTimer = false;
+
+    // Options object
+    options = {};
+
+    /**
+     * @description Constructor of Slider class
+     * 
+     * @param {string} selector - CSS selector of element which contains slides
+     * @param {object} options - Options object
+     */
+
+    constructor(selector, options) {
+
+        // Default options for slider
+        const defaultOptions = { speed: 3000, autoStart: true };
+
+        // Find container by CSS selector
+        const container = document.querySelector(selector);
+
+        // Assign class properties
+        this.options = { ...defaultOptions, ...options };
+        this.container = container;
+
+        if (!container) {
+            throw Error('Slider container not found: ', container);
+        }
+
+        // Initialize slider
+        this.init();
+
+    }
+
+    /**
+     * @description Slider initialization
+     * 
+     */
+
+    init = () => {
+
+        // Assign slider's classes
+        this.prepareContainer();
+
+        // Create dots navigation
+        this.makeDots();
+
+        // Run auto-start
+        this.startAutoSlider();
+
+        // Apply scroll handler
+        this.container.addEventListener('scroll', this.onScroll);
+
+        // Highlight active dot controller
+        // window.requestAnimationFrame(this.setActiveDot)
+        this.setActiveDot();
+    }
+
+
+    /**
+     * @description Remove slider presence from DOM
+     * 
+     */
+    destroy = () => {
+
+        // Remove timer
+        clearTimeout(this.sliderTimer);
+
+        // Remove scroll handler
+        this.container.removeEventListener('scroll', this.onScroll);
+
+        // Remove slider container class
+        this.container.classList.remove('slider-container');
+
+        // Remove dots controller from DOM
+        this.dotsContainer.remove();
+
+        // Remove slider classes from slides
+        this.elements.forEach(element => element.classList.remove('slider-element'));
+
+    }
+
+    /**
+     * @description Apply slider's classes to container and slides
+     * 
+     */
+    prepareContainer = () => {
+
+        // Apply slider container class
+        this.container.classList.add('slider-container');
+
+        // Apply slider element's classes to slides and add these elements to array
+        Array.from(this.container.children).forEach((child, i) => {
+            child.classList.add('slider-element');
+            this.elements.push(child);
+        });
+    }
+
+
+    /**
+     * @description Create dot navigation
+     * 
+     */
+    makeDots = () => {
+
+        // Create container and apply dot class
+        const dotsContainer = document.createElement('div');
+        dotsContainer.classList.add('slider-dots');
+
+        // Loop through slides elements
+        this.elements.forEach((element) => {
+
+            // Create individual dot for each slide
+            const dot = document.createElement('div');
+
+            // Highlight firs dot as active
+            if (!this.dots.length) {
+                dot.classList.add('active')
+            }
+
+            // Apply classes for each dot
+            dot.classList.add('slider-dots-dot');
+
+            // Add click handler
+            dot.addEventListener('click', (e) => { this.onDotClick(dot, element) })
+
+            // Add dot elements to array
+            this.dots.push(dot);
+
+            // Add dot element to container
+            dotsContainer.appendChild(dot);
+        });
+
+        // Add dot controller container to DOM
+        this.container.parentElement.appendChild(dotsContainer);
+
+        // Make a reference to dots container
+        this.dotsContainer = dotsContainer;
+    }
+
+
+    /**
+     * @description Click handler for dot controller
+     * 
+     * @param {HTMLElement} dot - Dot which was clicked
+     * @param {HTMLElement} slide - Slide related to clicket dot
+     */
+    onDotClick = (dot, slide) => {
+
+        // Stop auto-scroll timer
+        clearTimeout(this.sliderTimer);
+
+        // Clear active class from every dot
+        Array.from(this.dotsContainer.children).forEach((el) => el.classList.remove('active'));
+
+        // Add active class to clicked dot
+        dot.classList.add('active')
+
+        // Scroll container to related slide
+        this.container.scrollLeft = slide.offsetLeft - this.container.offsetLeft + slide.clientWidth / 2 - this.container.clientWidth / 2;
+
+        // Start auto-scroll
+        this.startAutoSlider();
+    }
+
+    /**
+     * @description Scroll handler
+     * 
+     */
+    onScroll = () => {
+
+        // Stop auto-scroll timer while user is scrolling
+        clearTimeout(this.sliderTimer);
+
+        // Start auto-scroll when user stops scrolling 
+        this.startAutoSlider();
+    }
+
+    /**
+     * @description Highlight active dot controller
+     * 
+     */
+    setActiveDot = () => {
+
+        // Calculate container's center
+        const centerX = this.container.scrollLeft + this.container.clientWidth / 2;
+
+        // Remove active class from all dots
+        this.dots.forEach(dot => dot.classList.remove('active'));
+
+        //  Highlight first dot if container scrolled to the left 
+        if (this.container.scrollLeft == 0) {
+            this.dots[0].classList.add('active');
+        }
+        // Highlight last dot if controller scrolled to the right
+        else if (this.container.scrollLeft == this.container.scrollWidth - this.container.clientWidth) {
+            this.dots[this.dots.length - 1].classList.add('active');
+        } else {
+
+            // Loop through slides elements array
+            this.elements.forEach((element, i) => {
+                // Check if slide element is in center position and highlight it with active class
+                if (element.offsetLeft - this.container.offsetLeft < centerX && centerX < element.offsetLeft - this.container.offsetLeft + element.clientWidth) {
+                    this.dots[i].classList.add('active');
+                }
+            });
+        }
+
+        requestAnimationFrame(this.setActiveDot);
+    }
+
+    /**
+     * @description Start auto-scroll
+     * 
+     */
+    startAutoSlider = () => {
+
+        // Check if autoStart option is on
+        if (this.options.autoStart) {
+
+            // Set timer to start auto-scroll after 'speed' option of time
+            this.sliderTimer = setTimeout(this.nextSlide, this.options.speed);
+        }
+    }
+
+    /**
+     * @description Scroll slider to the next slide
+     * 
+     */
+    nextSlide = () => {
+
+        // Variable to keep number of next slide
+        let nextActive = -1;
+
+        // Loop through all dots
+        for (let i = 0; i < this.dots.length; i++) {
+
+            // Check current highlighted dot
+            if (this.dots[i].classList.contains('active')) {
+                
+                // Remove active class from it
+                this.dots[i].classList.remove('active');
+
+                // Calculate the number of next slide element
+                if (i == this.dots.length - 1) {
+                    nextActive = 0
+                } else {
+                    nextActive = i + 1
+                }
+            }
+        }
+
+        // If next slide element is calculated
+        if (nextActive > -1) {
+
+            // Scroll container to next slide element
+            this.container.scrollLeft = this.elements[nextActive].offsetLeft - this.container.offsetLeft + this.elements[nextActive].clientWidth / 2 - this.container.clientWidth / 2;
+
+            // Highlight next dot with active class
+            this.dots[nextActive].classList.add('active');
+        }
+
+        // Start auto-scroll
+        this.startAutoSlider();
+    }
+}
